@@ -33,6 +33,12 @@ fn main() {
     let mut canvas = window.into_canvas().build().unwrap();
     let mut event_pump = sdl_context.event_pump().unwrap();
 
+    // キャラクターの座標を管理する変数
+    // 初期位置は画面の中央
+    // SDL2では左上が原点なため、それに合わせて座標を求めている
+    let mut character_x = (window_state.width as i32 / 2) - (CHARACTER_WIDTH as i32 / 2);
+    let mut character_y = (window_state.height as i32 / 2) - (CHARACTER_HEIGHT as i32 / 2);
+
     // 初期描画
     canvas.set_draw_color(Color::WHITE);
     canvas.clear();
@@ -60,8 +66,8 @@ fn main() {
         canvas.set_draw_color(Color::BLACK);
         canvas
             .fill_rect(sdl2::rect::Rect::new(
-                (window_state.width as i32 / 2) - (CHARACTER_WIDTH as i32 / 2),
-                (window_state.height as i32 / 2) - (CHARACTER_HEIGHT as i32 / 2),
+                character_x,
+                character_y,
                 CHARACTER_WIDTH,
                 CHARACTER_HEIGHT,
             ))
