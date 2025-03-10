@@ -1,3 +1,5 @@
+use sdl2::{render, video};
+
 use super::event;
 
 // キャラクターの移動速度
@@ -84,7 +86,7 @@ impl Character {
         };
     }
 
-    pub fn draw(&self, canvas: &mut sdl2::render::Canvas<sdl2::video::Window>) {
+    pub fn draw(&self, canvas: &mut render::Canvas<video::Window>) {
         canvas.set_draw_color(sdl2::pixels::Color::RGB(0, 0, 0));
         canvas
             .fill_rect(sdl2::rect::Rect::new(
