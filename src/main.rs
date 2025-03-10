@@ -1,21 +1,7 @@
-use std::f32;
+mod engine;
 
-use sdl2::{event::Event, keyboard::Scancode, pixels::Color};
-
-struct WindowState {
-    pub width: u32,
-    pub height: u32,
-}
-
-impl WindowState {
-    pub fn new(width: u32, height: u32) -> Self {
-        WindowState { width, height }
-    }
-
-    pub fn from_tupple((width, height): (u32, u32)) -> Self {
-        WindowState::new(width, height)
-    }
-}
+use engine::{event, meta};
+use sdl2::{event::Event, pixels::Color};
 
 // windowのタイトル
 const WINDOW_TITLE: &str = "STG Engine";
@@ -23,14 +9,6 @@ const WINDOW_TITLE: &str = "STG Engine";
 // 画面サイズ
 const WINDOW_WIDTH: u32 = 800;
 const WINDOW_HEIGHT: u32 = 500;
-
-// キャラクターのサイズ
-const CHARACTER_WIDTH: u32 = 30;
-const CHARACTER_HEIGHT: u32 = 30;
-
-// キャラクターの移動速度
-const CHARACTER_NORMAL_SPEED: i32 = 10;
-const CHARACTER_SLOW_SPEED_RATE: f32 = 0.5;
 
 // FPS上限
 const FPS_LIMIT: u32 = 60;
@@ -45,25 +23,30 @@ fn main() {
         .build()
         .unwrap();
 
-    let window_state = WindowState::from_tupple(window.size());
-
-    let mut canvas = window.into_canvas().build().unwrap();
-    let mut event_pump = sdl_context.event_pump().unwrap();
-
-    // キャラクターの座標を管理する変数
-    // 初期位置は画面の中央
-    // SDL2では左上が原点なため、それに合わせて座標を求めている
-    let mut character_x = (window_state.width as i32 / 2) - (CHARACTER_WIDTH as i32 / 2);
-    let mut character_y = (window_state.height as i32 / 2) - (CHARACTER_HEIGHT as i32 / 2);
-
     // FPSの制御用構造体
     let mut fps_manager = sdl2::gfx::framerate::FPSManager::new();
     fps_manager.set_framerate(FPS_LIMIT).unwrap();
+
+    // 画面の初期化
+    let mut canvas = window.into_canvas().build().unwrap();
+    let mut event_pump = sdl_context.event_pump().unwrap();
 
     // 初期描画
     canvas.set_draw_color(Color::WHITE);
     canvas.clear();
     canvas.present();
+
+    // ゲームオブジェクトが必要とするメタ情報をまとめた構造体
+    let meta = meta::Meta {
+        window_width: WINDOW_WIDTH,
+        window_height: WINDOW_HEIGHT,
+    };
+
+    // キャラクターの情報を管理する構造体
+    let mut character = engine::character::Character::new(
+        meta.get_window_width() as i32 / 2,
+        meta.get_window_height() as i32 / 2,
+    );
 
     'running: loop {
         for event in event_pump.poll_iter() {
@@ -77,56 +60,12 @@ fn main() {
             }
         }
 
-        // キーボード入力を下にキャラクターの座標を更新する
-        // ← : 左に移動
-        // → : 右に移動
-        // ↑ : 上に移動
-        // ↓ : 下に移動
-        // Shift : 移動速度を下げる
+        // キーボードの入力をイベントに変換
         let keyboard_state = event_pump.keyboard_state();
+        let event = event::new_event(&meta, keyboard_state);
 
-        // 移動速度の導出
-        let speed = match keyboard_state.is_scancode_pressed(Scancode::LShift) {
-            true => (CHARACTER_NORMAL_SPEED as f32 * CHARACTER_SLOW_SPEED_RATE) as i32,
-            false => CHARACTER_NORMAL_SPEED,
-        };
-
-        // 左右の移動量の計算
-        let diff_x = if keyboard_state.is_scancode_pressed(Scancode::Left) {
-            -speed
-        } else if keyboard_state.is_scancode_pressed(Scancode::Right) {
-            speed
-        } else {
-            0
-        };
-
-        // 上下の移動量の計算
-        let diff_y = if keyboard_state.is_scancode_pressed(Scancode::Up) {
-            -speed
-        } else if keyboard_state.is_scancode_pressed(Scancode::Down) {
-            speed
-        } else {
-            0
-        };
-
-        // 処理結果の反映
-        //
-        // キャラクターの座標を更新
-        character_x += diff_x;
-        character_y += diff_y;
-
-        // 画面外に出ないようにする
-        if character_x < 0 {
-            character_x = 0;
-        } else if character_x > window_state.width as i32 - CHARACTER_WIDTH as i32 {
-            character_x = window_state.width as i32 - CHARACTER_WIDTH as i32;
-        }
-
-        if character_y < 0 {
-            character_y = 0;
-        } else if character_y > window_state.height as i32 - CHARACTER_HEIGHT as i32 {
-            character_y = window_state.height as i32 - CHARACTER_HEIGHT as i32;
-        }
+        // キャラクターの更新処理を実行
+        character.update(event);
 
         // 描画処理
         //
@@ -135,16 +74,9 @@ fn main() {
         canvas.clear();
 
         // キャラクター (を模した長方形)
-        canvas.set_draw_color(Color::BLACK);
-        canvas
-            .fill_rect(sdl2::rect::Rect::new(
-                character_x,
-                character_y,
-                CHARACTER_WIDTH,
-                CHARACTER_HEIGHT,
-            ))
-            .unwrap();
+        character.draw(&mut canvas);
 
+        // 描画
         canvas.present();
 
         // 1/60 秒よりも早く処理が終わった場合は待機
