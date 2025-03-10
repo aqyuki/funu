@@ -17,6 +17,10 @@ impl WindowState {
     }
 }
 
+// 画面サイズ
+const WINDOW_WIDTH: u32 = 800;
+const WINDOW_HEIGHT: u32 = 500;
+
 const CHARACTER_WIDTH: u32 = 100;
 const CHARACTER_HEIGHT: u32 = 100;
 
@@ -31,7 +35,7 @@ fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
     let window = video_subsystem
-        .window("Hello SLD2", 800, 500)
+        .window("Hello SLD2", WINDOW_WIDTH, WINDOW_HEIGHT)
         .position_centered()
         .vulkan()
         .build()
