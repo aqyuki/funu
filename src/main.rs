@@ -78,10 +78,9 @@ fn main() {
         let keyboard_state = event_pump.keyboard_state();
 
         // 移動速度の導出
-        let spped = if keyboard_state.is_scancode_pressed(sdl2::keyboard::Scancode::LShift) {
-            (CHARACTER_NORMAL_SPEED as f32 * CHARACTER_SLOW_SPEED_RATE) as i32
-        } else {
-            CHARACTER_NORMAL_SPEED
+        let spped = match keyboard_state.is_scancode_pressed(sdl2::keyboard::Scancode::LShift) {
+            true => (CHARACTER_NORMAL_SPEED as f32 * CHARACTER_SLOW_SPEED_RATE) as i32,
+            false => CHARACTER_NORMAL_SPEED,
         };
 
         // 左右の移動量の計算
