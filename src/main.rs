@@ -21,6 +21,7 @@ impl WindowState {
 const WINDOW_WIDTH: u32 = 800;
 const WINDOW_HEIGHT: u32 = 500;
 
+// キャラクターのサイズ
 const CHARACTER_WIDTH: u32 = 100;
 const CHARACTER_HEIGHT: u32 = 100;
 
