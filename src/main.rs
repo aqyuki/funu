@@ -17,11 +17,19 @@ impl WindowState {
     }
 }
 
-const CHARACTER_WIDTH: u32 = 100;
-const CHARACTER_HEIGHT: u32 = 100;
+// windowのタイトル
+const WINDOW_TITLE: &str = "STG Engine";
+
+// 画面サイズ
+const WINDOW_WIDTH: u32 = 800;
+const WINDOW_HEIGHT: u32 = 500;
+
+// キャラクターのサイズ
+const CHARACTER_WIDTH: u32 = 30;
+const CHARACTER_HEIGHT: u32 = 30;
 
 // キャラクターの移動速度
-const CHARACTER_NORMAL_SPEED: i32 = 5;
+const CHARACTER_NORMAL_SPEED: i32 = 10;
 const CHARACTER_SLOW_SPEED_RATE: f32 = 0.5;
 
 // FPS上限
@@ -31,7 +39,7 @@ fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
     let window = video_subsystem
-        .window("Hello SLD2", 800, 500)
+        .window(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT)
         .position_centered()
         .vulkan()
         .build()
@@ -78,25 +86,25 @@ fn main() {
         let keyboard_state = event_pump.keyboard_state();
 
         // 移動速度の導出
-        let spped = match keyboard_state.is_scancode_pressed(Scancode::LShift) {
+        let speed = match keyboard_state.is_scancode_pressed(Scancode::LShift) {
             true => (CHARACTER_NORMAL_SPEED as f32 * CHARACTER_SLOW_SPEED_RATE) as i32,
             false => CHARACTER_NORMAL_SPEED,
         };
 
         // 左右の移動量の計算
         let diff_x = if keyboard_state.is_scancode_pressed(Scancode::Left) {
-            -spped
+            -speed
         } else if keyboard_state.is_scancode_pressed(Scancode::Right) {
-            spped
+            speed
         } else {
             0
         };
 
         // 上下の移動量の計算
         let diff_y = if keyboard_state.is_scancode_pressed(Scancode::Up) {
-            -spped
+            -speed
         } else if keyboard_state.is_scancode_pressed(Scancode::Down) {
-            spped
+            speed
         } else {
             0
         };
