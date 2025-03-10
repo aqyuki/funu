@@ -27,5 +27,19 @@ fn main() {
                 _ => {}
             }
         }
+
+        // 描画処理
+        //
+        // 背景
+        canvas.set_draw_color(sdl2::pixels::Color::WHITE);
+        canvas.clear();
+
+        // キャラクター (を模した長方形)
+        canvas.set_draw_color(sdl2::pixels::Color::BLACK);
+        canvas
+            .fill_rect(sdl2::rect::Rect::new(100, 100, 100, 100))
+            .unwrap();
+
+        canvas.present();
     }
 }
