@@ -21,7 +21,7 @@ const CHARACTER_WIDTH: u32 = 100;
 const CHARACTER_HEIGHT: u32 = 100;
 
 // キャラクターの移動速度
-const CHARACTER_NORMAL_SPEED: i32 = 5;
+const CHARACTER_NORMAL_SPEED: i32 = 10;
 const CHARACTER_SLOW_SPEED_RATE: f32 = 0.5;
 
 // FPS上限
