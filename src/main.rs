@@ -17,6 +17,9 @@ impl WindowState {
     }
 }
 
+// windowのタイトル
+const WINDOW_TITLE: &str = "Hello SDL2";
+
 // 画面サイズ
 const WINDOW_WIDTH: u32 = 800;
 const WINDOW_HEIGHT: u32 = 500;
@@ -36,7 +39,7 @@ fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
     let window = video_subsystem
-        .window("Hello SLD2", WINDOW_WIDTH, WINDOW_HEIGHT)
+        .window(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT)
         .position_centered()
         .vulkan()
         .build()
