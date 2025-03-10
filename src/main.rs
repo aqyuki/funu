@@ -1,3 +1,5 @@
+use std::f32;
+
 use sdl2::{event::Event, pixels::Color};
 
 struct WindowState {
@@ -17,6 +19,10 @@ impl WindowState {
 
 const CHARACTER_WIDTH: u32 = 100;
 const CHARACTER_HEIGHT: u32 = 100;
+
+// キャラクターの移動速度
+const CHARACTER_NORMAL_SPEED: i32 = 5;
+const CHARACTER_SLOW_SPEED_RATE: f32 = 0.5;
 
 fn main() {
     let sdl_context = sdl2::init().unwrap();
@@ -55,6 +61,45 @@ fn main() {
                 _ => {}
             }
         }
+
+        // キーボード入力を下にキャラクターの座標を更新する
+        // ← : 左に移動
+        // → : 右に移動
+        // ↑ : 上に移動
+        // ↓ : 下に移動
+        // Shift : 移動速度を下げる
+        let keyboard_state = event_pump.keyboard_state();
+
+        // 移動速度の導出
+        let spped = if keyboard_state.is_scancode_pressed(sdl2::keyboard::Scancode::LShift) {
+            (CHARACTER_NORMAL_SPEED as f32 * CHARACTER_SLOW_SPEED_RATE) as i32
+        } else {
+            CHARACTER_NORMAL_SPEED
+        };
+
+        // 左右の移動量の計算
+        let diff_x = if keyboard_state.is_scancode_pressed(sdl2::keyboard::Scancode::Left) {
+            -spped
+        } else if keyboard_state.is_scancode_pressed(sdl2::keyboard::Scancode::Right) {
+            spped
+        } else {
+            0
+        };
+
+        // 上下の移動量の計算
+        let diff_y = if keyboard_state.is_scancode_pressed(sdl2::keyboard::Scancode::Up) {
+            -spped
+        } else if keyboard_state.is_scancode_pressed(sdl2::keyboard::Scancode::Down) {
+            spped
+        } else {
+            0
+        };
+
+        // 処理結果の反映
+        //
+        // キャラクターの座標を更新
+        character_x += diff_x;
+        character_y += diff_y;
 
         // 描画処理
         //
