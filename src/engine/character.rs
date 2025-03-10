@@ -13,6 +13,8 @@ pub struct Character {
     pub height: u32,
     pub x: i32,
     pub y: i32,
+    before_dx: i32,
+    before_dy: i32,
     speed: i32,
     slow_rate: f32,
 }
@@ -24,6 +26,8 @@ impl Character {
             height: CHARACTER_HEIGHT,
             x,
             y,
+            before_dx: 0,
+            before_dy: 0,
             speed: CHARACTER_NORMAL_SPEED,
             slow_rate: CHARACTER_SLOW_SPEED_RATE,
         }
@@ -40,6 +44,7 @@ impl Character {
         let dx = match (event.right, event.left) {
             (true, false) => speed,
             (false, true) => -speed,
+            (true, true) => self.before_dx,
             _ => 0,
         };
 
@@ -47,8 +52,15 @@ impl Character {
         let dy = match (event.down, event.up) {
             (true, false) => speed,
             (false, true) => -speed,
+            (true, true) => self.before_dy,
             _ => 0,
         };
+
+        // 移動量を記憶
+        //
+        // 左右・上下同時押しの場合に、急に止まると違和感があるため、先に押されていたほうを優先する
+        self.before_dx = dx;
+        self.before_dy = dy;
 
         // 座標の更新
         self.x += dx;
