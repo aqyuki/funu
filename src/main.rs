@@ -7,4 +7,19 @@ fn main() {
         .vulkan()
         .build()
         .unwrap();
+
+    let mut event_pump = sdl_context.event_pump().unwrap();
+
+    'running: loop {
+        for event in event_pump.poll_iter() {
+            match event {
+                sdl2::event::Event::Quit { .. }
+                | sdl2::event::Event::KeyDown {
+                    keycode: Some(sdl2::keyboard::Keycode::Escape),
+                    ..
+                } => break 'running,
+                _ => {}
+            }
+        }
+    }
 }
