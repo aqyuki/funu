@@ -1,3 +1,5 @@
+use sdl2::{event::Event, pixels::Color};
+
 struct WindowState {
     pub width: u32,
     pub height: u32,
@@ -5,10 +7,11 @@ struct WindowState {
 
 impl WindowState {
     pub fn new(width: u32, height: u32) -> Self {
-        WindowState {
-            width: width,
-            height: height,
-        }
+        WindowState { width, height }
+    }
+
+    pub fn from_tupple((width, height): (u32, u32)) -> Self {
+        WindowState::new(width, height)
     }
 }
 
@@ -25,8 +28,7 @@ fn main() {
         .build()
         .unwrap();
 
-    let window_size = window.size();
-    let window_state = WindowState::new(window_size.0, window_size.1);
+    let window_state = WindowState::from_tupple(window.size());
 
     let mut canvas = window.into_canvas().build().unwrap();
     let mut event_pump = sdl_context.event_pump().unwrap();
