@@ -34,15 +34,15 @@ fn main() {
     let mut event_pump = sdl_context.event_pump().unwrap();
 
     // 初期描画
-    canvas.set_draw_color(sdl2::pixels::Color::WHITE);
+    canvas.set_draw_color(Color::WHITE);
     canvas.clear();
     canvas.present();
 
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
-                sdl2::event::Event::Quit { .. }
-                | sdl2::event::Event::KeyDown {
+                Event::Quit { .. }
+                | Event::KeyDown {
                     keycode: Some(sdl2::keyboard::Keycode::Escape),
                     ..
                 } => break 'running,
@@ -53,11 +53,11 @@ fn main() {
         // 描画処理
         //
         // 背景
-        canvas.set_draw_color(sdl2::pixels::Color::WHITE);
+        canvas.set_draw_color(Color::WHITE);
         canvas.clear();
 
         // キャラクター (を模した長方形)
-        canvas.set_draw_color(sdl2::pixels::Color::BLACK);
+        canvas.set_draw_color(Color::BLACK);
         canvas
             .fill_rect(sdl2::rect::Rect::new(
                 (window_state.width as i32 / 2) - (CHARACTER_WIDTH as i32 / 2),
