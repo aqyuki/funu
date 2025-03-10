@@ -18,7 +18,7 @@ impl WindowState {
 }
 
 // windowのタイトル
-const WINDOW_TITLE: &str = "Hello SDL2";
+const WINDOW_TITLE: &str = "STG Engine";
 
 // 画面サイズ
 const WINDOW_WIDTH: u32 = 800;
