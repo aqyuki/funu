@@ -18,10 +18,13 @@ fn main() {
     let video_subsystem = sdl_context.video().unwrap();
     let window = video_subsystem
         .window(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT)
+        .fullscreen_desktop()
         .position_centered()
         .vulkan()
         .build()
         .unwrap();
+
+    let (window_width, window_height) = window.size();
 
     // FPSの制御用構造体
     let mut fps_manager = sdl2::gfx::framerate::FPSManager::new();
@@ -31,15 +34,10 @@ fn main() {
     let mut canvas = window.into_canvas().build().unwrap();
     let mut event_pump = sdl_context.event_pump().unwrap();
 
-    // 初期描画
-    canvas.set_draw_color(Color::WHITE);
-    canvas.clear();
-    canvas.present();
-
     // ゲームオブジェクトが必要とするメタ情報をまとめた構造体
     let meta = meta::Meta {
-        window_width: WINDOW_WIDTH,
-        window_height: WINDOW_HEIGHT,
+        window_width,
+        window_height,
     };
 
     // キャラクターの情報を管理する構造体
