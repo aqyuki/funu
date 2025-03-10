@@ -24,6 +24,9 @@ const CHARACTER_HEIGHT: u32 = 100;
 const CHARACTER_NORMAL_SPEED: i32 = 5;
 const CHARACTER_SLOW_SPEED_RATE: f32 = 0.5;
 
+// FPS上限
+const FPS_LIMIT: u32 = 60;
+
 fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
@@ -44,6 +47,10 @@ fn main() {
     // SDL2では左上が原点なため、それに合わせて座標を求めている
     let mut character_x = (window_state.width as i32 / 2) - (CHARACTER_WIDTH as i32 / 2);
     let mut character_y = (window_state.height as i32 / 2) - (CHARACTER_HEIGHT as i32 / 2);
+
+    // FPSの制御用構造体
+    let mut fps_manager = sdl2::gfx::framerate::FPSManager::new();
+    fps_manager.set_framerate(FPS_LIMIT).unwrap();
 
     // 初期描画
     canvas.set_draw_color(Color::WHITE);
@@ -132,5 +139,8 @@ fn main() {
             .unwrap();
 
         canvas.present();
+
+        // 1/60 秒よりも早く処理が終わった場合は待機
+        fps_manager.delay();
     }
 }
