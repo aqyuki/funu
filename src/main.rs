@@ -1,6 +1,6 @@
 mod engine;
 
-use engine::{event, meta};
+use engine::{engine::GameObject, event, meta};
 use sdl2::{event::Event, pixels::Color};
 
 // windowのタイトル
@@ -43,10 +43,12 @@ fn main() {
     };
 
     // キャラクターの情報を管理する構造体
-    let mut character = engine::character::Character::new(
+    let character = engine::character::Character::new(
         meta.get_window_width() as i32 / 2,
         meta.get_window_height() as i32 / 2,
     );
+
+    let mut objects: Vec<Box<dyn GameObject>> = vec![Box::new(character)];
 
     'running: loop {
         for event in event_pump.poll_iter() {
@@ -62,10 +64,10 @@ fn main() {
 
         // キーボードの入力をイベントに変換
         let keyboard_state = event_pump.keyboard_state();
-        let event = event::new_event(&meta, keyboard_state);
+        let event = event::new_event(meta, keyboard_state);
 
         // キャラクターの更新処理を実行
-        character.update(event);
+        objects.iter_mut().for_each(|object| object.update(event));
 
         // 描画処理
         //
@@ -73,8 +75,8 @@ fn main() {
         canvas.set_draw_color(Color::WHITE);
         canvas.clear();
 
-        // キャラクター (を模した長方形)
-        character.draw(&mut canvas);
+        // ゲームオブジェクトの描画
+        objects.iter().for_each(|object| object.draw(&mut canvas));
 
         // 描画
         canvas.present();

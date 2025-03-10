@@ -1,6 +1,6 @@
 use sdl2::{render, video};
 
-use super::event;
+use super::{engine::GameObject, event};
 
 // キャラクターの移動速度
 const CHARACTER_NORMAL_SPEED: i32 = 10;
@@ -34,8 +34,10 @@ impl Character {
             slow_rate: CHARACTER_SLOW_SPEED_RATE,
         }
     }
+}
 
-    pub fn update(&mut self, event: event::Event) {
+impl GameObject for Character {
+    fn update(&mut self, event: event::Event) {
         // キャラクターの移動速度を決定
         let speed = match event.shift {
             true => (self.speed as f32 * self.slow_rate) as i32,
@@ -86,7 +88,7 @@ impl Character {
         };
     }
 
-    pub fn draw(&self, canvas: &mut render::Canvas<video::Window>) {
+    fn draw(&self, canvas: &mut render::Canvas<video::Window>) {
         canvas.set_draw_color(sdl2::pixels::Color::RGB(0, 0, 0));
         canvas
             .fill_rect(sdl2::rect::Rect::new(

@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Meta {
     pub window_width: u32,
     pub window_height: u32,

@@ -2,8 +2,9 @@ use sdl2::keyboard::{self, Scancode};
 
 use super::meta;
 
-pub struct Event<'event> {
-    pub meta: &'event meta::Meta,
+#[derive(Debug, Copy, Clone)]
+pub struct Event {
+    pub meta: meta::Meta,
     pub up: bool,
     pub down: bool,
     pub left: bool,
@@ -11,10 +12,7 @@ pub struct Event<'event> {
     pub shift: bool,
 }
 
-pub fn new_event<'event>(
-    meta: &'event meta::Meta,
-    state: keyboard::KeyboardState,
-) -> Event<'event> {
+pub fn new_event(meta: meta::Meta, state: keyboard::KeyboardState) -> Event {
     Event {
         meta,
         up: state.is_scancode_pressed(Scancode::Up),
