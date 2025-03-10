@@ -101,6 +101,19 @@ fn main() {
         character_x += diff_x;
         character_y += diff_y;
 
+        // 画面外に出ないようにする
+        if character_x < 0 {
+            character_x = 0;
+        } else if character_x > window_state.width as i32 - CHARACTER_WIDTH as i32 {
+            character_x = window_state.width as i32 - CHARACTER_WIDTH as i32;
+        }
+
+        if character_y < 0 {
+            character_y = 0;
+        } else if character_y > window_state.height as i32 - CHARACTER_HEIGHT as i32 {
+            character_y = window_state.height as i32 - CHARACTER_HEIGHT as i32;
+        }
+
         // 描画処理
         //
         // 背景
