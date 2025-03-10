@@ -1,6 +1,6 @@
 use std::f32;
 
-use sdl2::{event::Event, pixels::Color};
+use sdl2::{event::Event, keyboard::Scancode, pixels::Color};
 
 struct WindowState {
     pub width: u32,
@@ -78,24 +78,24 @@ fn main() {
         let keyboard_state = event_pump.keyboard_state();
 
         // 移動速度の導出
-        let spped = match keyboard_state.is_scancode_pressed(sdl2::keyboard::Scancode::LShift) {
+        let spped = match keyboard_state.is_scancode_pressed(Scancode::LShift) {
             true => (CHARACTER_NORMAL_SPEED as f32 * CHARACTER_SLOW_SPEED_RATE) as i32,
             false => CHARACTER_NORMAL_SPEED,
         };
 
         // 左右の移動量の計算
-        let diff_x = if keyboard_state.is_scancode_pressed(sdl2::keyboard::Scancode::Left) {
+        let diff_x = if keyboard_state.is_scancode_pressed(Scancode::Left) {
             -spped
-        } else if keyboard_state.is_scancode_pressed(sdl2::keyboard::Scancode::Right) {
+        } else if keyboard_state.is_scancode_pressed(Scancode::Right) {
             spped
         } else {
             0
         };
 
         // 上下の移動量の計算
-        let diff_y = if keyboard_state.is_scancode_pressed(sdl2::keyboard::Scancode::Up) {
+        let diff_y = if keyboard_state.is_scancode_pressed(Scancode::Up) {
             -spped
-        } else if keyboard_state.is_scancode_pressed(sdl2::keyboard::Scancode::Down) {
+        } else if keyboard_state.is_scancode_pressed(Scancode::Down) {
             spped
         } else {
             0
