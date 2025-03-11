@@ -1,6 +1,6 @@
 use crate::engine::render;
 
-pub trait Stage {
+pub trait Stage: render::Drawable {
     fn initial_position(&self) -> (i32, i32) {
         (0, 0)
     }

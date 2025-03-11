@@ -1,10 +1,9 @@
-use crate::engine::{event, render};
-
-use super::stage;
+use crate::engine::{event, render, scene};
 
 const CHARACTER_NORMAL_SPEED: i32 = 10;
 const CHARACTER_SLOW_ATTENUATION: f32 = 0.5;
 
+#[derive(Clone, Copy)]
 pub struct Character {
     position: (i32, i32),
     speed: i32,
@@ -22,7 +21,7 @@ impl Character {
         }
     }
 
-    pub fn update(&mut self, event: event::Event, stage: &dyn stage::Stage) {
+    pub fn update(self, event: event::Event, scene: &mut scene::Scene) -> Character {
         let speed = match event.move_slow {
             true => (self.speed as f32 * self.slow_attenuation) as i32,
             false => self.speed,
@@ -42,15 +41,20 @@ impl Character {
             _ => 0,
         };
 
-        self.before_move = (dx, dy);
-
         let (x, y) = (self.position.0 + dx, self.position.1 + dy);
 
-        self.position = if stage.is_inside_stage(x, y) {
-            (x, y)
-        } else {
-            stage.fix_position(x, y)
+        let stage = scene.get_stage_info();
+        let position = match stage.is_inside_stage(x, y) {
+            true => (x, y),
+            false => stage.fix_position(x, y),
         };
+
+        Character {
+            position,
+            speed: self.speed,
+            slow_attenuation: self.slow_attenuation,
+            before_move: (dx, dy),
+        }
     }
 }
 
