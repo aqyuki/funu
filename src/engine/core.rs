@@ -4,7 +4,8 @@ use super::{
         character,
         stage::{self, Stage},
     },
-    render::{Drawable, Render},
+    render::Render,
+    scene::Scene,
 };
 
 /// Engineは各種ゲームオブジェクトやリソース・イベントを管理します。
@@ -48,7 +49,9 @@ impl Engine {
 
         // ゲームオブジェクト
         let stage = stage::SimpleStage::new(width, height);
-        let mut character = character::Character::new(stage.initial_position());
+        let character = character::Character::new(stage.initial_position());
+
+        let mut scene = Scene::new(character, Box::new(stage), &mut render);
 
         'running: loop {
             for event in event_pump.poll_iter() {
@@ -61,19 +64,11 @@ impl Engine {
                     _ => {}
                 }
             }
-
-            // キー入力をイベントに変換する
             let event = event::event_from_keyboard_input(event_pump.keyboard_state());
 
-            // ゲームオブジェクトの更新
-            character.update(event, &stage);
+            scene.update(event);
+            scene.render();
 
-            // ゲームオブジェクトの描画
-            render.render(stage.get_render_info());
-            render.render(character.get_render_info());
-            render.apply();
-
-            // post process
             fps_manager.delay();
         }
     }
