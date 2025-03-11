@@ -1,7 +1,10 @@
 use crate::engine::{event, render, scene};
 
+use super::{bullet, stage};
+
 const CHARACTER_NORMAL_SPEED: i32 = 10;
 const CHARACTER_SLOW_ATTENUATION: f32 = 0.5;
+const CHARACTER_SHOT_DELAY_FRAME: i32 = 3;
 
 #[derive(Clone, Copy)]
 pub struct Character {
@@ -9,6 +12,8 @@ pub struct Character {
     speed: i32,
     slow_attenuation: f32,
     before_move: (i32, i32),
+    shot_delay_frame: i32,
+    frames_since_last_shot: i32,
 }
 
 impl Character {
@@ -18,10 +23,30 @@ impl Character {
             speed: CHARACTER_NORMAL_SPEED,
             slow_attenuation: CHARACTER_SLOW_ATTENUATION,
             before_move: (0, 0),
+            shot_delay_frame: CHARACTER_SHOT_DELAY_FRAME,
+            frames_since_last_shot: 0,
         }
     }
 
-    pub fn update(self, event: event::Event, scene: &mut scene::Scene) -> Character {
+    pub fn update(
+        &mut self,
+        event: event::Event,
+        stage: &Box<dyn stage::Stage>,
+        command: &mut scene::SceneCommand,
+    ) {
+        self.frames_since_last_shot += 1;
+        if event.is_shoot && self.frames_since_last_shot >= self.shot_delay_frame {
+            command.append_bullet(bullet::Bullet::new(
+                (self.position.0 - 7, self.position.1 - 10),
+                (0, -10),
+            ));
+            command.append_bullet(bullet::Bullet::new(
+                (self.position.0 + 7, self.position.1 - 10),
+                (0, -10),
+            ));
+            self.frames_since_last_shot = 0;
+        }
+
         let speed = match event.move_slow {
             true => (self.speed as f32 * self.slow_attenuation) as i32,
             false => self.speed,
@@ -43,18 +68,11 @@ impl Character {
 
         let (x, y) = (self.position.0 + dx, self.position.1 + dy);
 
-        let stage = scene.get_stage_info();
-        let position = match stage.is_inside_stage(x, y) {
+        self.before_move = (dx, dy);
+        self.position = match stage.is_inside_stage(x, y) {
             true => (x, y),
             false => stage.fix_position(x, y),
         };
-
-        Character {
-            position,
-            speed: self.speed,
-            slow_attenuation: self.slow_attenuation,
-            before_move: (dx, dy),
-        }
     }
 }
 
@@ -62,7 +80,7 @@ impl render::Drawable for Character {
     fn get_render_info(&self) -> render::Texture {
         render::Texture::Rectangle {
             center: self.position,
-            size: (20, 20),
+            size: (25, 25),
             color: (0, 0, 0),
         }
     }
