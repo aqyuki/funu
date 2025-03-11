@@ -1,24 +1,20 @@
-use sdl2::keyboard::{self, Scancode};
+use sdl2::keyboard::{KeyboardState, Scancode};
 
-use super::meta;
-
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct Event {
-    pub meta: meta::Meta,
-    pub up: bool,
-    pub down: bool,
-    pub left: bool,
-    pub right: bool,
-    pub shift: bool,
+    pub move_up: bool,
+    pub move_down: bool,
+    pub move_left: bool,
+    pub move_right: bool,
+    pub move_slow: bool,
 }
 
-pub fn new_event(meta: meta::Meta, state: keyboard::KeyboardState) -> Event {
+pub fn event_from_keyboard_input(keyboard_state: KeyboardState) -> Event {
     Event {
-        meta,
-        up: state.is_scancode_pressed(Scancode::Up),
-        down: state.is_scancode_pressed(Scancode::Down),
-        left: state.is_scancode_pressed(Scancode::Left),
-        right: state.is_scancode_pressed(Scancode::Right),
-        shift: state.is_scancode_pressed(Scancode::LShift),
+        move_up: keyboard_state.is_scancode_pressed(Scancode::Up),
+        move_down: keyboard_state.is_scancode_pressed(Scancode::Down),
+        move_left: keyboard_state.is_scancode_pressed(Scancode::Left),
+        move_right: keyboard_state.is_scancode_pressed(Scancode::Right),
+        move_slow: keyboard_state.is_scancode_pressed(Scancode::LShift),
     }
 }

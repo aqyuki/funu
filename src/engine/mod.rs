@@ -1,4 +1,4 @@
-pub mod character;
-pub mod engine;
+pub mod core;
 pub mod event;
-pub mod meta;
+pub mod model;
+pub mod render;
