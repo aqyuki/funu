@@ -29,7 +29,7 @@ impl Engine {
         // ウィンドウを作成
         let window = video_subsystem
             .window(&self.app_name, 800, 600)
-            .vulkan()
+            .opengl()
             .position_centered()
             .build()
             .unwrap();
@@ -37,8 +37,7 @@ impl Engine {
         let (width, height) = window.size();
 
         // 画面の初期化
-        let canvas = window.into_canvas().build().unwrap();
-        let mut render = Render::new(canvas);
+        let mut render = Render::new(window);
 
         // FPS管理用
         let mut fps_manager = sdl2::gfx::framerate::FPSManager::new();
