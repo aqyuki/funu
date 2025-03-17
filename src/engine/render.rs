@@ -1,57 +1,49 @@
-use sdl2::{rect::Rect, render, video};
-
-fn find_sdl_gl_driver() -> Option<u32> {
-    for (index, item) in sdl2::render::drivers().enumerate() {
-        if item.name == "opengl" {
-            return Some(index as u32);
-        }
-    }
-    None
-}
+use sdl2::video::{GLContext, GLProfile};
 
 pub struct Render {
-    pub canvas: render::Canvas<video::Window>,
+    window: sdl2::video::Window,
+    _ctx: GLContext,
 }
 
 impl Render {
-    pub fn new(window: sdl2::video::Window) -> Render {
-        let canvas = window
-            .into_canvas()
-            .index(find_sdl_gl_driver().unwrap())
+    pub fn new(app_name: &str, sdl_context: &sdl2::Sdl) -> Render {
+        let video_subsystem = sdl_context.video().unwrap();
+        let gl_attr = video_subsystem.gl_attr();
+        gl_attr.set_context_profile(GLProfile::Core);
+        gl_attr.set_context_version(3, 3);
+        let window = video_subsystem
+            .window(app_name, 800, 600)
+            .opengl()
+            .position_centered()
             .build()
             .unwrap();
-        Render { canvas }
+
+        let ctx = window.gl_create_context().unwrap();
+        gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
+        Render { window, _ctx: ctx }
+    }
+
+    pub fn window_size(&self) -> (u32, u32) {
+        self.window.size()
     }
 
     pub fn render(&mut self, texture: Texture) {
         match texture {
-            Texture::Background { color } => {
-                self.canvas
-                    .set_draw_color(sdl2::pixels::Color::RGB(color.0, color.1, color.2));
-                self.canvas.clear();
-            }
+            Texture::Background { color } => unsafe {
+                gl::ClearColor(color.0 as f32, color.1 as f32, color.2 as f32, 1.0);
+                gl::Clear(gl::COLOR_BUFFER_BIT);
+            },
             Texture::Rectangle {
                 center,
                 size,
                 color,
-            } => {
-                self.canvas
-                    .set_draw_color(sdl2::pixels::Color::RGB(color.0, color.1, color.2));
-                self.canvas
-                    .fill_rect(Rect::new(
-                        center.0 - (size.0 as i32 / 2),
-                        center.1 - (size.1 as i32 / 2),
-                        size.0,
-                        size.1,
-                    ))
-                    .unwrap();
-            }
+            } => {}
             Texture::None => (),
         };
     }
 
     pub fn apply(&mut self) {
-        self.canvas.present();
+        self.window.gl_swap_window();
     }
 }
 

@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 sdl2 = { version = "0.37", features = ["gfx"] }
+gl = "0.14.0"
