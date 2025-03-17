@@ -11,6 +11,7 @@ impl Render {
         let gl_attr = video_subsystem.gl_attr();
         gl_attr.set_context_profile(GLProfile::Core);
         gl_attr.set_context_version(3, 3);
+
         let window = video_subsystem
             .window(app_name, 800, 600)
             .opengl()
@@ -20,6 +21,11 @@ impl Render {
 
         let ctx = window.gl_create_context().unwrap();
         gl::load_with(|name| video_subsystem.gl_get_proc_address(name) as *const _);
+        unsafe {
+            gl::Enable(gl::BLEND);
+            gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
+        }
+
         Render { window, _ctx: ctx }
     }
 
