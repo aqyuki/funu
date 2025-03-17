@@ -23,22 +23,9 @@ impl Engine {
     pub fn start(&mut self) {
         let sdl_context = sdl2::init().unwrap();
 
-        // サブシステムを初期化
-        let video_subsystem = sdl_context.video().unwrap();
-
-        // ウィンドウを作成
-        let window = video_subsystem
-            .window(&self.app_name, 800, 600)
-            .vulkan()
-            .position_centered()
-            .build()
-            .unwrap();
-
-        let (width, height) = window.size();
-
         // 画面の初期化
-        let canvas = window.into_canvas().build().unwrap();
-        let mut render = Render::new(canvas);
+        let mut render = Render::new(&self.app_name, &sdl_context);
+        let (width, height) = render.window_size();
 
         // FPS管理用
         let mut fps_manager = sdl2::gfx::framerate::FPSManager::new();
