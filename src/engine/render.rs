@@ -35,10 +35,9 @@ impl Render {
 
     pub fn render(&mut self, texture: Texture) {
         match texture {
-            Texture::Background { color } => unsafe {
-                gl::ClearColor(color.0 as f32, color.1 as f32, color.2 as f32, 1.0);
-                gl::Clear(gl::COLOR_BUFFER_BIT);
-            },
+            Texture::Background { color } => {
+                draw_background((color.0 as f32, color.1 as f32, color.2 as f32, 1.0))
+            }
             Texture::Rectangle {
                 center,
                 size,
@@ -50,6 +49,13 @@ impl Render {
 
     pub fn apply(&mut self) {
         self.window.gl_swap_window();
+    }
+}
+
+fn draw_background(color: (f32, f32, f32, f32)) {
+    unsafe {
+        gl::ClearColor(color.0, color.1, color.2, color.3);
+        gl::Clear(gl::COLOR_BUFFER_BIT);
     }
 }
 
